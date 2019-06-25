@@ -81,18 +81,13 @@ CONTAINS
           ALLOCATE(CHARACTER(l) :: fmt_value)
           CALL GET_COMMAND_ARGUMENT(number=i+1,VALUE=fmt_value)
           select type( val => self%args(label_pos)%VALUE )
-          ! type is (integer)
-          !   read(fmt_value, *) self%args(label_pos)%VALUE
-          ! type is (real)
-          !   read(fmt_value, *) self%args(label_pos)%VALUE
-          ! type is (character(*))
-          !   read(fmt_value, *) self%args(label_pos)%VALUE
           type is (integer)
-            read(fmt_value, *) VAL
+            read(fmt_value, *) val
           type is (real)
-            read(fmt_value, *) VAL
+            read(fmt_value, *) val
           type is (character(*))
-            read(fmt_value, *) VAL
+            deallocate(self%args(label_pos)%VALUE)
+            allocate(self%args(label_pos)%VALUE, source = fmt_value)
           end select
 
           DEALLOCATE(label,fmt_value)
