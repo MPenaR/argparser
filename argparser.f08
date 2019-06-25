@@ -1,18 +1,29 @@
 MODULE argparser
   IMPLICIT NONE
 
+  private
+
+  public :: argument_list, assignment(=)
+
+  interface assignment(=)
+     module procedure int_ass
+     module procedure real_ass
+     module procedure char_ass
+   end interface
+
   TYPE :: argument
      CHARACTER(:), ALLOCATABLE :: label
      CLASS(*), ALLOCATABLE :: VALUE
   END TYPE argument
 
-  TYPE, PUBLIC :: argument_list
+  TYPE :: argument_list
      TYPE(argument), ALLOCATABLE :: args(:)
      INTEGER :: N_args = 0
    CONTAINS
      PROCEDURE :: add_argument
      PROCEDURE :: PRINT => print_args
      PROCEDURE :: parse_args
+     procedure :: get => get_argument_by_label
   END TYPE argument_list
 
 CONTAINS
@@ -94,5 +105,45 @@ CONTAINS
        END DO
     END IF
   END SUBROUTINE parse_args
+
+  function get_argument_by_label(self,label) result(value)
+    class(argument_list), intent(in) :: self
+    character(*), intent(in) :: label
+    class(*), allocatable :: value
+
+    integer :: j
+
+    do j = 1, self%N_args
+      if (self%args(j)%label==label) allocate(value, source=self%args(j)%value)
+    end do
+  end function
+
+  subroutine int_ass(a,b)
+    integer, intent(out) :: a
+    class(*), intent(in) :: b
+    select type (b)
+      type is (integer)
+        a = b
+    end select
+  end subroutine int_ass
+
+  subroutine real_ass(a,b)
+    real, intent(out) :: a
+    class(*), intent(in) :: b
+    select type (b)
+      type is (real)
+        a = b
+    end select
+  end subroutine real_ass
+
+  subroutine char_ass(a,b)
+    character(:), allocatable, intent(out) :: a
+    class(*), intent(in) :: b
+    select type (b)
+    type is (character(*))
+        a = b
+    end select
+  end subroutine char_ass
+
 
 END MODULE argparser
