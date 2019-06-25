@@ -3,21 +3,21 @@ MODULE argparser
 
   TYPE :: argument
      CHARACTER(:), ALLOCATABLE :: label
-     CLASS(*), ALLOCATABLE :: value
+     CLASS(*), ALLOCATABLE :: VALUE
   END TYPE argument
 
-  TYPE, PUBLIC :: arguments
+  TYPE, PUBLIC :: argument_list
      TYPE(argument), ALLOCATABLE :: args(:)
      INTEGER :: N_args = 0
    CONTAINS
      PROCEDURE :: add_argument
      PROCEDURE :: print_args
-  END TYPE arguments
+  END TYPE argument_list
 
 CONTAINS
 
   SUBROUTINE add_argument(self,label,default_value)
-    CLASS(arguments), INTENT(inout) :: self
+    CLASS(argument_list), INTENT(inout) :: self
     CHARACTER(*), INTENT(in) :: label
     CLASS(*), INTENT(in) :: default_value
 
@@ -35,19 +35,22 @@ CONTAINS
   END SUBROUTINE add_argument
 
   SUBROUTINE print_args(self)
-    CLASS(arguments), INTENT(in) :: self
+    CLASS(argument_list), INTENT(in) :: self
 
     INTEGER :: i
 
+    PRINT*,
+    PRINT*, "Number of arguments defined: ", self%N_args
+
     DO i = 1, self%N_args
-       PRINT*, self%args(i)%label
+
        SELECT TYPE( val => self%args(i)%VALUE)
        TYPE is(INTEGER)
-          PRINT*,"integer: ", val
+          PRINT*, "label: ", self%args(i)%label, ", type: integer, value: ", val
        TYPE is(REAL)
-          PRINT*, "real: ", val
+          PRINT*, "label: ", self%args(i)%label, ", type: real, value: ", val
        TYPE is(CHARACTER(*))
-          PRINT*, "character: ", val
+          PRINT*, "label: ", self%args(i)%label, ", type: character, value: ", val
        END SELECT
     END DO
 
