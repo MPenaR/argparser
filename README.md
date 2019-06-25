@@ -30,7 +30,7 @@ PROGRAM test_argparser
 END PROGRAM test_argparser
 ```
 ```bash
-./test Nth 15 L 0.5 fileroute '/home/documents/' N 40
+./test L 0.5 fileroute '/home/documents/' N 40
 
  Number of arguments defined:            4
  label: N, type: integer, value:           30
@@ -43,6 +43,6 @@ END PROGRAM test_argparser
  label: N, type: integer, value:           40
  label: L, type: real, value:   0.500000000
  label: fileroute, type: character, value: /home/documents/
- label: Nth, type: integer, value:           15
+ label: Nth, type: integer, value:            6
 
 ```
