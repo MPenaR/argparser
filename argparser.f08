@@ -51,7 +51,6 @@ CONTAINS
 
     INTEGER :: i
 
-    PRINT*,
     PRINT*, "Number of arguments defined: ", self%N_args
 
     DO i = 1, self%N_args
