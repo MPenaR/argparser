@@ -76,7 +76,6 @@ CONTAINS
     INTEGER :: N_args, i, j, l, label_pos
     CHARACTER(:), ALLOCATABLE :: label, fmt_value
     N_args = COMMAND_ARGUMENT_COUNT()
-    PRINT*,
     IF ( MOD(N_args,2) == 1 ) THEN
        PRINT*, "missing argument"
     ELSE
