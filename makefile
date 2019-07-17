@@ -1,9 +1,12 @@
+FC=gfortran -c
+FL=gfortran
+FFLAGS=-fbacktrace -Og -fcheck=all -g
 test: test_argparser.o argparser.o
-	gfortran $^ -o $@
+	$(FL) $(FFLAGS) $^ -o $@
 test_argparser.o: test_argparser.f08 argparser.o
-	gfortran -c $<
+	$(FC) $(FFLAGS) $<
 argparser.o: argparser.f08
-	gfortran -c $<
+	$(FC) $(FFLAGS) $<
 .PHONY: clean
 clean:
-	rm -f *.o *.mod test
+	rm -vf *.o *.mod test

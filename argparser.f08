@@ -34,15 +34,43 @@ CONTAINS
     CLASS(*), INTENT(in) :: default_value
 
     TYPE(argument), ALLOCATABLE :: known_arguments(:)
+    integer :: i
 
     ALLOCATE( known_arguments( self%N_args + 1) )
+    do i = 1, self%N_args
+        select type (val => self%args(i)%value)
+                type is (integer)
+                allocate( known_arguments(i)%VALUE, source=val)
+                type is (real)
+                allocate( known_arguments(i)%VALUE, source=val)
+                type is (character(*))
+                allocate( known_arguments(i)%VALUE, source=val)
+        end select
+        known_arguments(i)%label = self%args(i)%label
+    end do
 
-    known_arguments(1:self%N_args) = self%args
-    known_arguments(self%N_args + 1 )%label = label
-    ALLOCATE(known_arguments(self%N_args + 1 )%VALUE, source= default_value)
+    self%N_args = self%N_args + 1    
+    known_arguments(self%N_args )%label = label
+    ALLOCATE(known_arguments(self%N_args )%VALUE, source= default_value)
+    if (allocated(self%args)) deallocate(self%args)
+    allocate(self%args(self%N_args))
+    select type (val => known_arguments(i)%value)
+        type is(integer)
+                print*, val
+    end select
+    do i = 1, self%N_args
+        select type( val=> known_arguments(i)%value)
+                type is (integer)
+                allocate(self%args(i)%value, source=val)
+                type is (real)
+                allocate(self%args(i)%value, source=val)
+                type is (character(*))
+                allocate(self%args(i)%value, source=val)
+        end select
+        self%args(i)%label = known_arguments(i)%label
+    end do
 
-    CALL MOVE_ALLOC(known_arguments,self%args)
-    self%N_args = self%N_args + 1
+    deallocate(known_arguments)
 
   END SUBROUTINE add_argument
 
@@ -112,7 +140,14 @@ CONTAINS
     integer :: j
 
     do j = 1, self%N_args
-      if (self%args(j)%label==label) allocate(value, source=self%args(j)%value)
+        select type (val => self%args(j)%value)
+                type is ( integer )
+                if (self%args(j)%label==label) allocate(value, source=val)
+                type is ( real )
+                if (self%args(j)%label==label) allocate(value, source=val)
+                type is ( character(*))
+                if (self%args(j)%label==label) allocate(value, source=val)
+        end select
     end do
   end function
 
