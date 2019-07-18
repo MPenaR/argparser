@@ -54,10 +54,6 @@ CONTAINS
     ALLOCATE(known_arguments(self%N_args )%VALUE, source= default_value)
     if (allocated(self%args)) deallocate(self%args)
     allocate(self%args(self%N_args))
-    select type (val => known_arguments(i)%value)
-        type is(integer)
-                print*, val
-    end select
     do i = 1, self%N_args
         select type( val=> known_arguments(i)%value)
                 type is (integer)
