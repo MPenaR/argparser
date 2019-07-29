@@ -9,6 +9,7 @@ MODULE argparser
      module procedure int_ass
      module procedure real_ass
      module procedure char_ass
+     module procedure log_ass
    end interface
 
   TYPE :: argument
@@ -45,6 +46,8 @@ CONTAINS
                 allocate( known_arguments(i)%VALUE, source=val)
                 type is (character(*))
                 allocate( known_arguments(i)%VALUE, source=val)
+                type is (logical)
+                allocate( known_arguments(i)%VALUE, source=val)
         end select
         known_arguments(i)%label = self%args(i)%label
     end do
@@ -61,6 +64,8 @@ CONTAINS
                 type is (real)
                 allocate(self%args(i)%value, source=val)
                 type is (character(*))
+                allocate(self%args(i)%value, source=val)
+                type is (logical)
                 allocate(self%args(i)%value, source=val)
         end select
         self%args(i)%label = known_arguments(i)%label
@@ -86,7 +91,9 @@ CONTAINS
           PRINT*, "label: ", self%args(i)%label, ", type: real, value: ", val
        TYPE is(CHARACTER(*))
           PRINT*, "label: ", self%args(i)%label, ", type: character, value: ", val
-          CLASS default
+       type is (logical)
+          print*, "label: ", self%args(i)%label, ", type: logical, value: ", val
+       CLASS default
           PRINT*, "print function not defined for that type"
        END SELECT
 
@@ -121,6 +128,8 @@ CONTAINS
           type is (character(*))
             deallocate(self%args(label_pos)%VALUE)
             allocate(self%args(label_pos)%VALUE, source = fmt_value)
+          type is (logical)
+            read(fmt_value, *) val
           end select
 
           DEALLOCATE(label,fmt_value)
@@ -138,11 +147,25 @@ CONTAINS
     do j = 1, self%N_args
         select type (val => self%args(j)%value)
                 type is ( integer )
-                if (self%args(j)%label==label) allocate(value, source=val)
+                    if (self%args(j)%label==label) then
+                        allocate(value, source=val)
+                        exit
+                    end if 
                 type is ( real )
-                if (self%args(j)%label==label) allocate(value, source=val)
+                    if (self%args(j)%label==label) then
+                        allocate(value, source=val)
+                        exit
+                    end if
                 type is ( character(*))
-                if (self%args(j)%label==label) allocate(value, source=val)
+                    if (self%args(j)%label==label) then 
+                        allocate(value, source=val)
+                        exit
+                    end if
+                type is (logical)
+                    if (self%args(j)%label==label) then
+                        allocate(value, source=val)
+                        exit
+                    end if
         end select
     end do
     if (j>self%N_args) error stop 'label "'//label//'" does not exists.'
@@ -174,6 +197,15 @@ CONTAINS
         a = b
     end select
   end subroutine char_ass
+
+  subroutine log_ass(a,b)
+      logical, intent(out) :: a
+      class(*), intent(in) :: b
+          select type (b)
+              type is (logical)
+                  a = b
+          end select
+  end subroutine log_ass
 
 
 END MODULE argparser
