@@ -145,6 +145,7 @@ CONTAINS
                 if (self%args(j)%label==label) allocate(value, source=val)
         end select
     end do
+    if (j>self%N_args) error stop 'label "'//label//'" does not exists.'
   end function
 
   subroutine int_ass(a,b)
